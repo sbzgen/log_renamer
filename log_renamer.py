@@ -14,13 +14,11 @@ IGNORED_FILE_NAMES = {
     "lineage"
 }
 
-
 def GetFiles() -> list[str]:
     files = []
     directory = sys.argv[1]
 
     for dirPath, _, fileNames in os.walk(directory):
-        # Check if there is any file with the given file extension
         for fileName in fileNames:
             _, fileType = os.path.splitext(fileName)
 
@@ -36,7 +34,7 @@ def GetFiles() -> list[str]:
 
     return files
 
-# real codecs, aac/m4a are mental illnesses
+# real codecs, other ones are mental illnesses
 AUDIO_TYPES = {
     ".mp3",
     ".ogg",
@@ -47,8 +45,7 @@ AUDIO_TYPES = {
 def GetAudio(folder: str) -> str | None:
     if not os.path.isdir(folder):
         folder = os.path.dirname(folder)
-    
-    # List files in the directory
+
     for file in os.listdir(folder):
         _, fileType = os.path.splitext(file)
 
@@ -57,7 +54,6 @@ def GetAudio(folder: str) -> str | None:
 
         return os.path.join(folder, file)
 
-# Gets the first valid audio file found in our folder, None is nothing is found.
 def HasMultipleDiscs(filePath: str, tag: TinyTag | None) -> bool:
     song = GetAudio(filePath)
     tag = tag or TinyTag.get(song)
@@ -109,10 +105,7 @@ def GetRenameString(filePath: str) -> str:
     # This assumes the files (logs/cues) include the disc number somewhere in their filename already.
         # eg: 2Pac - All Eyez on Me (CD1).cue
     if HasMultipleDiscs(filePath, tag):
-        # Get the count for our file.
-        discNumber = GetDiscNumber(filePath)
-
-        return f"{newName} (Disc {discNumber})"
+        return f"{newName} (Disc {GetDiscNumber(filePath)})"
 
     return newName
 
